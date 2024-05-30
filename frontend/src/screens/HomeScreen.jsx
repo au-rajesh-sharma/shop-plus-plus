@@ -28,6 +28,9 @@ const HomeScreen = () => {
                 // responsive: small screen, take 12 columns, medium - 6 col, large - 4, xl - 3  
                 <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
                     <Product product={product}/>
+                    {/* <h3>{product._id}</h3> 
+                    ** error: there is no product._id */}
+            
                 </Col>
             ))}
         </Row>

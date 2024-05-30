@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import Rating from './Rating'
 
 const Product = ({ product }) => {
-    const maxRating = 5 //highest possible (stars) rating  
+    //const maxRating = 5 //highest possible (stars) rating  
   return (
     // my-3 margin y axis 3, p-3 padding 3 all around, rounded 
     <Card className='my-3 p-3 rounded'>
@@ -13,7 +13,10 @@ const Product = ({ product }) => {
         </Link>
 
         <Card.Body>
-           <Link to={'/product/${product._id}'}>
+            <Card.Text as='h3'>
+                {product._id}
+            </Card.Text>
+           <Link to={`/product/${product._id}`}>
             <Card.Title as='div' className='product-title'>
                 <strong>{product.name}</strong>
             </Card.Title>

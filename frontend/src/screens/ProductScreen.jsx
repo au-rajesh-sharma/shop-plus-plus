@@ -7,8 +7,8 @@ import axios from 'axios'
 
 const ProductScreen = () => {
   // get id from url. id must be declared as object {}
-  const {id} = useParams()
-  
+  const {id:productId} = useParams()
+    
   //const product = products.find((p) => id === p._id );
   const maxRating = 5 //highest possible (stars) rating 
   
@@ -21,12 +21,12 @@ const ProductScreen = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       //use a back tick ` here
-      const {data} = await axios.get(`/api/products/${id}`)
+      const {data} = await axios.get(`/api/products/${productId}`)
       setProduct(data)
     };
   
     fetchProduct()
-  }, [id])//reload every time productId changes
+  }, [productId])//reload every time productId changes
 
     return (
     <>
@@ -65,12 +65,12 @@ const ProductScreen = () => {
                     <ListGroup.Item>
                         <Row>
                             <Col>Status:</Col>
-                            <Col><strong>{product.countInStock > 0 ? `In Stock: ${product.countInStock}` : 'Out of Stock'}</strong></Col>
+                            <Col><strong>{product.qtyInStock > 0 ? `In Stock: ${product.qtyInStock}` : 'Out of Stock'}</strong></Col>
                         </Row>
                     </ListGroup.Item> 
                     <ListGroup.Item>
                         <Button className='btn-block' type='button' 
-                            disabled={product.countInStock === 0}
+                            disabled={product.qtyInStock === 0}
                             >Add to Cart
                         </Button>
                     </ListGroup.Item> 
