@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import {Row, Col} from 'react-bootstrap'
-import Product from '../components/Product'
+import Product from '../components/ProductCard'
 import axios from 'axios'
 //import products from '../products'
 
@@ -24,13 +24,10 @@ const HomeScreen = () => {
     <>
         <h1>Latest Products</h1>
         <Row>
-            {products.map((product) => (
+            {products.map((p) => (
                 // responsive: small screen, take 12 columns, medium - 6 col, large - 4, xl - 3  
-                <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
-                    <Product product={product}/>
-                    {/* <h3>{product._id}</h3> 
-                    ** error: there is no product._id */}
-            
+                <Col key={p._id} sm={12} md={6} lg={4} xl={3}>
+                    <Product product={p}/>
                 </Col>
             ))}
         </Row>

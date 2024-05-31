@@ -9,9 +9,6 @@ const ProductScreen = () => {
   // get id from url. id must be declared as object {}
   const {id:productId} = useParams()
     
-  //const product = products.find((p) => id === p._id );
-  const maxRating = 5 //highest possible (stars) rating 
-  
   //get the product object for this id from api
   //setProducts will be used to update product state
   const [product, setProduct] = useState([])
@@ -27,6 +24,8 @@ const ProductScreen = () => {
   
     fetchProduct()
   }, [productId])//reload every time productId changes
+
+  const stockMsg = product.countInStock > 0 ? `In Stock: ${product.countInStock}` : 'Out of Stock' 
 
     return (
     <>
@@ -65,12 +64,12 @@ const ProductScreen = () => {
                     <ListGroup.Item>
                         <Row>
                             <Col>Status:</Col>
-                            <Col><strong>{product.qtyInStock > 0 ? `In Stock: ${product.qtyInStock}` : 'Out of Stock'}</strong></Col>
+                            <Col><strong>{stockMsg}</strong></Col>
                         </Row>
                     </ListGroup.Item> 
                     <ListGroup.Item>
                         <Button className='btn-block' type='button' 
-                            disabled={product.qtyInStock === 0}
+                            disabled={product.countInStock === 0}
                             >Add to Cart
                         </Button>
                     </ListGroup.Item> 
