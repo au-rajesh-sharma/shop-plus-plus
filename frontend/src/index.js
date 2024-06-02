@@ -6,6 +6,10 @@ import {
   Route,
   RouterProvider
  } from 'react-router-dom'
+
+ import { Provider } from 'react-redux';
+ import store from './store' 
+
 //import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/styles/bootstrap.custom.css'; //this is custom css styles file
 import './assets/styles/index.css'; //this is css styles file
@@ -29,10 +33,11 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* we provide {router} created earlier as 
-    const router = createBrowserRouter(
+    {/* we wrap router provider with Provider {store}
     for rendering */}
-    <RouterProvider router = {router}/>
+    <Provider store = {store}>
+      <RouterProvider router = {router}/>
+    </Provider>
   </React.StrictMode>
 );
 
