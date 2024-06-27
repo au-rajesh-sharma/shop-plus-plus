@@ -1,4 +1,6 @@
 import {Row, Col} from 'react-bootstrap'
+import Loader from '../components/Loader';
+import Message from '../components/Message';
 import Product from '../components/ProductCard'
 import { useGetProductsQuery } from '../slices/productsApiSlice';
 
@@ -10,10 +12,12 @@ import { useGetProductsQuery } from '../slices/productsApiSlice';
 
   return (
     <>
-      { isLoading ? (<h2>Loading...</h2>) 
+      { isLoading ? (<Loader />) 
       : error ? 
-      (<div>{error?.data?.message || error.error}</div>) 
-      : ( //rendering of actual poroducts
+      ( <Message variant='danger'>
+          <div>{error?.data?.message || error.error}</div> 
+        </Message>
+      ) : ( //rendering of actual poroducts
         <>
           <h1>Latest Products</h1>
           <Row>
