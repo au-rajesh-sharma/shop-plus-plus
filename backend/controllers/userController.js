@@ -161,7 +161,7 @@ const getUsers = asyncHandler(async (req, res) => {
 //@desc    get user by ID, an admin route
 //@route   GET /api/users/:id
 //@acess   private/admin (could be private or private admin)
-const getUserByID = asynchandler(async (req, res) => {
+const getUserByID = asyncHandler(async (req, res) => {
     //find user by id. select all fields, minus the password
     const user = await User.findById(req.params.id).select('-password')
 
