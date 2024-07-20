@@ -1,4 +1,4 @@
-import asynchandler from "../middleware/asynchandler.js";
+import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
 //import jwt from 'jsonwebtoken'
 import generateToken from "../utils/generateToken.js";
@@ -6,7 +6,7 @@ import generateToken from "../utils/generateToken.js";
 // @desc     Auth user and get token
 // @route    POST /api/users/login
 // @acess    public (could be private or private admin)
-const authUser = asynchandler(async (req, res) => {
+const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
   
     const user = await User.findOne({ email });
@@ -26,7 +26,7 @@ const authUser = asynchandler(async (req, res) => {
     }
   });
   
-// const authUser = asynchandler(async (req, res) => {
+// const authUser = asyncHandler(async (req, res) => {
 //     const {email, password} = req.body //destructure req body
 
 //     //find user with this email
@@ -55,7 +55,7 @@ const authUser = asynchandler(async (req, res) => {
 //@desc     register user
 //@route    POST /api/users
 //@acess    public (could be private or private admin)
-const registerUser = asynchandler(async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
     const {name, email, password} = req.body //destructure req body
     
     //find user with this email
@@ -91,7 +91,7 @@ const registerUser = asynchandler(async (req, res) => {
 //@desc     logout user and clear the cookies
 //@route    POST /api/users/logout
 //@acess    private (could be private or private admin)
-const logoutUser = asynchandler(async (req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {
     //clear the cookie token (token name is jwt)
     res.cookie('jwt', '', {//set it to empty, and
         httpOnly: true,
@@ -105,7 +105,7 @@ const logoutUser = asynchandler(async (req, res) => {
 //@route   GET /api/users/profile
 //@acess   private (could be private or private admin)
 //we can get logged in user from req.user  
-const getUserProfile = asynchandler(async (req, res) => {
+const getUserProfile = asyncHandler(async (req, res) => {
     //find the user from User model
     const user = await User.findById(req.user._id)
 
@@ -123,7 +123,7 @@ const getUserProfile = asynchandler(async (req, res) => {
 //@desc    update user profile (user will update, no id, a token will be used)
 //@route   PUT /api/users/profile
 //@acess   private (could be private or private admin)
-const updateUserProfile = asynchandler(async (req, res) => {
+const updateUserProfile = asyncHandler(async (req, res) => {
     //find the user from User model
     const user = await User.findById(req.user._id)
 
@@ -153,7 +153,7 @@ const updateUserProfile = asynchandler(async (req, res) => {
 //@desc    get (all) users, an admin route
 //@route   GET /api/users
 //@acess   private/admin (could be private or private admin)
-const getUsers = asynchandler(async (req, res) => {
+const getUsers = asyncHandler(async (req, res) => {
     const users = await User.find({})
     res.status(200).json(users)
 })
@@ -175,7 +175,7 @@ const getUserByID = asynchandler(async (req, res) => {
 //@desc    delete a user, an admin route
 //@route   DELETE /api/users/:id
 //@acess   private/admin (could be private or private admin)
-const deleteUser = asynchandler(async (req, res) => {
+const deleteUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id)
     if(user) {//if user found
         if(user.isAdmin) {//if it's admin user
@@ -194,7 +194,7 @@ const deleteUser = asynchandler(async (req, res) => {
 //@desc    update a user, an admin route
 //@route   PUT /api/users/:id
 //@acess   private/admin (could be private or private admin)
-const updateUser = asynchandler(async (req, res) => {
+const updateUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id)
     if(user) {//if user found
         //set value of the fields to req.body values. 

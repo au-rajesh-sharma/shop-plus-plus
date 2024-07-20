@@ -1,11 +1,11 @@
-import asynchandler from "../middleware/asyncHandler.js";
+import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/productModel.js";
 //import {PAGINATION_LIMIT, CAROUSEL_PRODUCT_SIZE} from '../constants.js'
 
 //@desc     fetch all products
 //@route    GET /api/products
 //@acess    public (could be private or private admin)
-const getProducts = asynchandler(async (req, res) => {
+const getProducts = asyncHandler(async (req, res) => {
     
     //for pagination, set pageSize (products in a page), and
     //current page number to display-get from req query 
@@ -36,7 +36,7 @@ const getProducts = asynchandler(async (req, res) => {
 //@desc     fetch single product
 //@route    GET /api/products/:id
 //@acess    public 
-const getProductById = asynchandler(async (req, res) => {
+const getProductById = asyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id)
     if(product) {return res.json(product)}
     else {
@@ -48,7 +48,7 @@ const getProductById = asynchandler(async (req, res) => {
 //@desc     create a new product
 //@route    POST /api/products
 //@acess    private and admin 
-const createProduct = asynchandler(async (req, res) => {
+const createProduct = asyncHandler(async (req, res) => {
     //when admin clicks on ‘create product’ button, a product with sample data is created. 
     //Then admin can edit the product fields
     const product = new Product({
@@ -69,7 +69,7 @@ const createProduct = asynchandler(async (req, res) => {
 //@desc     update a products
 //@route    PUT /api/products/:id
 //@acess    private and admin
-const updateProduct = asynchandler(async (req, res) => {
+const updateProduct = asyncHandler(async (req, res) => {
     const {name,price,description,image,brand,
         category,countInStock} =  req.body
     
@@ -96,7 +96,7 @@ const updateProduct = asynchandler(async (req, res) => {
 //@desc     delete a products
 //@route    DELETE /api/products/:id
 //@acess    private and admin
-const deleteProduct = asynchandler(async (req, res) => {
+const deleteProduct = asyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id)
     if(product) {
         await Product.deleteOne({_id: product._id})
@@ -110,7 +110,7 @@ const deleteProduct = asynchandler(async (req, res) => {
 //@desc     create a new Review
 //@route    POST /api/products/:id/reviews
 //@acess    private (only logged in users) 
-const createProductReview = asynchandler(async (req, res) => {
+const createProductReview = asyncHandler(async (req, res) => {
 
     //submitted review will have rating and comment
     const {rating, comment} = req.body 
@@ -153,7 +153,7 @@ const createProductReview = asynchandler(async (req, res) => {
 //@desc     get top rating products
 //@route    GET /api/products/top
 //@acess    public 
-const getTopProducts = asynchandler(async (req, res) => {
+const getTopProducts = asyncHandler(async (req, res) => {
     const products = await Product.find({})
         .sort({rating: -1}) //sort on rating descending
         .limit(process.env.CAROUSEL_PRODUCT_SIZE) // limit to 3 products
