@@ -1,14 +1,15 @@
 
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Form, Button, Row, Col, ListGroup, Image, Card, ListGroupItem } from 'react-bootstrap';
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import { Link, useParams } from 'react-router-dom';
+import { Button, Row, Col, ListGroup, Image, Card, ListGroupItem } from 'react-bootstrap';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { useGetOrderDetailsQuery, useGetPayPalClientIdQuery, 
-    usePayOrderMutation } from '../slices/ordersApiSlice';
-import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
+import { useGetOrderDetailsQuery, useGetPaypalClientIdQuery, 
+    usePayOrderMutation, useDeliverOrderMutation } from '../slices/ordersApiSlice';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import {useNavigate} from 'react-router-dom'
 
 const OrderScreen = () => {
     //get id from url, name it orderId
@@ -18,30 +19,32 @@ const OrderScreen = () => {
     const {data: order, refetch, isLoading, error} 
         = useGetOrderDetailsQuery(orderId)
     
-    //initialize function for payOrder
+    //initialize function for payOrder and deliverOrder
     const [payOrder, {isLoading:loadingPay}] = usePayOrderMutation()
+    const [deliverOrder, {isLoading:loadingDeliver}] = useDeliverOrderMutation()
 
     //get paypal dispatch and isPending for use
     const [{isPending}, paypalDispatch] = usePayPalScriptReducer()
   
     //get user info from state
-    const userInfo = useSelector((state) => state.auth)
+    const {userInfo} = useSelector((state) => state.auth)
     
     //initialize getPayPalClientId query for use
-    const {data: paypal, isLoading: loadingPayPal, error: errorPayPal} 
-        = useGetPayPalClientIdQuery()
-
+    const {data: paypal, isLoading: loadingPayPal, error: errorPayPal,} 
+        = useGetPaypalClientIdQuery()
+    
     //create use effect to load paypal script
     useEffect(() => {
         //check for no errors
-        if(!errorPayPal && !loadingPayPal && paypal.clientId){
-           //create async function to load paypal script
+        if(!errorPayPal && !loadingPayPal && paypal.clinetid){
+           
+            //create async function to load paypal script
            const loadPayPalScript = async () => {
             //use paypal dispatch
             paypalDispatch({//the arguments to dispatch 
                 type: 'resetOptions',
                 value: {
-                    'client-id': paypal.clientId,
+                    'client-id': paypal.clinetid,
                     currency: 'AUD',
                 }
             })
@@ -56,12 +59,25 @@ const OrderScreen = () => {
         }//give dependencies
     }, [order, paypal, paypalDispatch, loadingPayPal, errorPayPal])
 
-    //handler functions on paypal buttons (are in sandbox mode)
-    async function onApproveTest() {
-        //call payOrder mutation, set details to empty payer object
-        await payOrder({orderId, details: {payer: {} } })
-        refetch()//refetch after marked as paid 
-        toast.success('Payment successful')
+    //async function onApprove(data, actions) { 
+    function onApprove(data, actions) { 
+        //actions trigger paypal. after paypal is approved, 
+        //capture the order pmt details, and call 
+        //async function passing details
+        return actions.order.capture().then(async function (details) { 
+            try {
+               await payOrder({orderId, details}).unwrap()//call payOrder mutation
+               refetch()//refetch after marked as paid 
+               toast.success('Payment successful')
+            } catch (err) {
+                toast.error(err?.data?.message || err.message)
+            }
+        })
+    }
+    
+     
+     function onError(err) {
+        toast.error(err.message) 
      }
      
     function createOrder(data, actions) {
@@ -75,34 +91,46 @@ const OrderScreen = () => {
                 },
             ],
         })//it returns a promise, so resolve by returning orderId
-        .then((orderId) => {
-            return orderId
+        .then((orderID) => {
+            return orderID
         })//end .then
      }
 
-    function onApprove(data, actions) { 
-        //actions trigger paypal. after paypal is approved, 
-        //capture the order pmt details, and call 
-        //async function passing details
-        return actions.order.capture().then(async function (details) { 
-            try {
-               await payOrder({orderId, details})//call payOrder mutation
-               refetch()//refetch after marked as paid 
-               toast.success('Payment successful')
-            } catch (err) {
-                toast.error(err?.data?.message || err.message)
-            }
-        })
-    }
+    //handler for deliver Order button
+     const deliverOrderHandler = async () => {
+        try {
+            await deliverOrder(orderId) 
+            refetch()
+            toast.success('Order delivered')   
+        } catch (err) {
+            toast.error(err?.data?.message || err.message)   
+        }
+    } 
 
-    function onError(err) {
-        toast.error(err.message) 
+     //handler functions for mark as delivered
+     async function payOrderHandler() {
+        //call payOrder mutation, set details to empty payer object
+        await payOrder({orderId, details: {payer: {} } })
+        refetch()//refetch after marked as paid 
+        toast.success('Payment successful')
      }
 
-  return (
-    isLoading ? <Loader /> : error ? <Message variant='danger' /> : (
+    const navigate = useNavigate()
+    const backHandler = () => {
+        navigate(-1)//navigate to previous screen (product page)
+    }
+
+
+  return isLoading ?  (<Loader />) : error ? 
+  (<Message variant='danger'>{error?.data?.message || error.error}</Message>) 
+    : (
         <>
-            <h1>Order: {order._id}</h1>
+            <Button onClick={backHandler}
+                className='btn btn-dark my-3'>
+                Go Back
+            </Button>
+
+            <h2>Order: {order._id}</h2>
             <Row>
                 <Col md={8}>
                    <ListGroup variant='flush'> 
@@ -195,42 +223,60 @@ const OrderScreen = () => {
                                     <Col>${order.totalPrice}</Col>
                                 </Row>
                             </ListGroup.Item>
-                            {/* PAY ORDER BUTTON if order not paid */}
+
+                            {/* PAY ORDER PAYPAL BUTTONS if order not paid */}
                             {!order.isPaid && (//if order not paid, then
                                 <ListGroup.Item>
                                     {/*if loadingPay, then show loader*/}
                                     {loadingPay && <Loader />}
                                     {/*if pending, then show loader, otherwise*/}
                                     {isPending ? (<Loader />) : (
-                                        //show button for test payment
                                         <div>
-                                            <Button onClick={onApproveTest} style={{marginBottom: '10px'}}
-                                            >Test Pay Order
-                                            </Button>
-                                            <div>
-                                                {/* buttons like PayPal and Debit or Credit Card  */}
-                                                <PayPalButtons 
-                                                    // handler functions on button clicks
-                                                    createOrder={createOrder}
-                                                    onApprove={onApprove}
-                                                    onError={onError}
-                                                ></PayPalButtons>
-                                            </div>
+                                            <PayPalButtons 
+                                                createOrder={createOrder}
+                                                onApprove={onApprove}
+                                                onError={onError}
+                                            ></PayPalButtons>
                                         </div>
-                                    )}
+                                       )
+                                    }
 
                                 </ListGroup.Item>
                             )}
+                       
+                            {/*if loading, then show loader, otherwise*/}
+                            {loadingDeliver && <Loader />}
                             
-                            
-                            {/* MARK AS DELIVERED BUTTON PLACEHOLDER */}
+                            {/* show button for mark as paid if admin user 
+                                and order not paid*/}
+                            {userInfo && userInfo.isAdmin && !order.isPaid && (
+                                 <ListGroup.Item>
+                                    <Button type='button' className='btn btn-block'
+                                        onClick={payOrderHandler}  
+                                        >Mark as Paid
+                                    </Button> 
+                                </ListGroup.Item>
+                            )}
 
+                            {/* show button for mark as delivered if admin user
+                                and order is paid */}
+                            { !order.isDelivered && order.isPaid 
+                                && userInfo && userInfo.isAdmin &&  (
+                                <ListGroup.Item>
+                                    <Button type='button' className='btn btn-block' 
+                                        onClick={deliverOrderHandler} 
+                                        >Mark As Delivered
+                                    </Button>
+                                </ListGroup.Item> 
+                            )} 
+                            
                         </ListGroup>
                     </Card> 
                 </Col>
             </Row>
         </>
     )
-)}
+}
+
 
 export default OrderScreen;

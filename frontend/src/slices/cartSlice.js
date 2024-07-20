@@ -59,16 +59,19 @@ const cartSlice = createSlice({
             return updateCart((state))
         },
 
+        //when different user logs in, clear everything of previous user
         clearCartItems: (state, action) => {
             state.cartItems = []
-            return updateCart(state)
-        }
-    }
+            localStorage.setItem('cart', JSON.stringify(state))
+        },
+        
+        resetCart: (state) => (initialState)
+    },
 })
 
 //export addToCart, removeFromCart as cartSlice action
 export const {addToCart, removeFromCart, 
     saveShippingAddress, savePaymentMethod,
-    clearCartItems} = cartSlice.actions
+    clearCartItems, resetCart} = cartSlice.actions
 
 export default cartSlice.reducer;

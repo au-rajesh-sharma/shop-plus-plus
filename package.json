@@ -10,7 +10,8 @@
     "client": "npm start --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/seeder.js",
-    "data:destroy": "node backend/seeder.js -d"
+    "data:destroy": "node backend/seeder.js -d",
+    "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "author": "Rajesh Sharma",
   "license": "ISC",
@@ -22,6 +23,7 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.4.0",
+    "multer": "^1.4.5-lts.1",
     "nodemon": "^3.1.1"
   },
   "devDependencies": {

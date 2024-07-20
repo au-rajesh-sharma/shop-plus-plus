@@ -40,7 +40,7 @@ const LoginScreen = () => {
         //call login mutation with email/pw from state, unwrap the resolved value
         const res = await login({email, password}).unwrap();
         //setCredential will set localStorage to spread values of res as userInfo
-        dispatch(setCredentials({...res, }))
+        dispatch(setCredentials({...res }))
         //navigate to redirect (either shipping or /)
         navigate(redirect)
     } catch (err) {
@@ -49,7 +49,7 @@ const LoginScreen = () => {
   }
     return (
     <FormContainer> 
-        <h1>Sign In</h1>
+        <h2>Sign In</h2>
         <Form onSubmit={submitHandler}>
             <Form.Group controlId='email' className='my-2'>
                 <Form.Label>Email Address</Form.Label>

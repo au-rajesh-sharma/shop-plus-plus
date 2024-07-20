@@ -32,7 +32,7 @@ const ShippingScreen = () => {
         {/* to show checkout steps, passing in step 1 and 2, this is step 2 */}
         <CheckoutSteps step1 step2 />
         
-        <h1>Shipping </h1>
+        <h2>Shipping </h2>
         <Form onSubmit={submitHandler}>
             <Form.Group controlId='address' className='my-2'>
                 <Form.Label>Address</Form.Label>

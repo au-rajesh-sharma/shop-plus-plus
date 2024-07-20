@@ -7,6 +7,8 @@ import {LinkContainer} from 'react-router-bootstrap'
 import logo from '../assets/logo.png';
 import { useLogoutMutation } from '../slices/usersApiSlice';
 import { logout } from '../slices/authSlice';
+import SearchBox from './SearchBox';
+import { resetCart } from '../slices/cartSlice';
 
 
 const Header = () => {
@@ -27,9 +29,10 @@ const Header = () => {
         try {
             await logoutApiCall().unwrap//unwrap the promise result
             dispatch(logout())
+            dispatch(resetCart())
             navigate('/login')
         } catch (err) {
-            console.log(err)    
+            err.message(err)    
         }
     }
     
@@ -41,33 +44,44 @@ const Header = () => {
             {/* turn to hamburger when screen size gets smaller, expand='md' */}
                 <Container>
                     <LinkContainer to='/'>
-                        <Navbar.Brand to='/'>
-                            <img src={logo} alt='ShopPlusPlus Online Store' />
-                            ShopPlusPlus Online Store
+                        <Navbar.Brand to='/' >
+                            <img src={logo} alt='Rajesh Sharma Online Store' />
+                            Rajesh Sharma Online Store
                         </Navbar.Brand>
                     </LinkContainer>
 
                     <Navbar.Toggle aria-controls='basic-navbar-nav' />
                     <Navbar.Collapse id='basic-navbar-nav'>
                         <Nav className='ms-auto'>
-                            <LinkContainer to='/cart'>
-                                <Nav.Link> <FaShoppingCart /> Cart
-                                    {   //if cart has items, show a badge with count
-                                        cartItems.length > 0  && (
-                                            //show badge with count
-                                            <Badge pill bg='success' style={{marginLeft: '5px'}}> 
-                                                {/* show items count */}
-                                                {itemsCount} 
-                                            </Badge>
-                                       )
-                                    }
-                                </Nav.Link>
-                            </LinkContainer>
+                        <div>
+                            <SearchBox />
+                        </div>
 
+                        <LinkContainer to='/cart'>
+                            <Nav.Link> <FaShoppingCart color='red' />Cart
+                                {//if cart has items, show a badge with count
+                                cartItems.length > 0  && (
+                                //show badge with count
+                                <Badge pill bg='success' style={{marginLeft: '5px'}}> 
+                                    {/* show items count */}
+                                    {itemsCount} 
+                                </Badge>
+                                       )
+                                }
+                            </Nav.Link>
+                        </LinkContainer>
+                            
+                            {/* show spaces */}
+                            {/* <pre>  </pre> */}
+                            
+                            
+                            {userInfo && (<FaUser color='red'/>)}
+                            
                             {/* if user info exist, show user details and logout option, 
                             otherwise direct to login */}
                             {userInfo ? (
-                                <NavDropdown title={userInfo.name} id='username'>
+                                <>
+                                <NavDropdown title={userInfo.name} id='username' >
                                     <LinkContainer to='/profile'>
                                         <NavDropdown.Item>Profile</NavDropdown.Item>
                                     </LinkContainer>
@@ -75,15 +89,35 @@ const Header = () => {
                                         Logout
                                     </NavDropdown.Item>
                                 </NavDropdown>
+                                </>
 
                             ) : (
                                 <LinkContainer to='/login'>
-                            {/* <LinkContainer to='/auth'> */}
-                                <Nav.Link href='/login'> <FaUser /> Sign In</Nav.Link>
-                            </LinkContainer>
+                                    {/* <LinkContainer to='/auth'> */}
+                                    <Nav.Link href='/login'> <FaUser /> Sign In</Nav.Link>
+                                </LinkContainer>
 
                             )}
-                            </Nav>
+                        
+                           
+                            {/* if userInfo exists, and its admin user, show admin drop down */}
+                            {userInfo && userInfo.isAdmin && (
+                                                                
+                                <NavDropdown title='Admin options' id='adminmenu' font='bold'>
+                                    <LinkContainer to='/admin/productlist'>
+                                        <NavDropdown.Item>Products</NavDropdown.Item>
+                                    </LinkContainer>
+                                    <LinkContainer to='/admin/userlist'>
+                                        <NavDropdown.Item>Users</NavDropdown.Item>
+                                    </LinkContainer>
+                                    <LinkContainer to='/admin/orderlist'>
+                                        <NavDropdown.Item>Orders</NavDropdown.Item>
+                                    </LinkContainer>
+                                    
+                                </NavDropdown> 
+                               
+                            ) }
+                        </Nav>
                     </Navbar.Collapse>
                 </Container>
             </Navbar> 

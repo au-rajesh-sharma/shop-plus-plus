@@ -2,6 +2,7 @@ import {Card} from 'react-bootstrap'
 import {Link} from 'react-router-dom'
 import Rating from './Rating'
 
+
 const Product = ({ product }) => {
     //const maxRating = 5 //highest possible (stars) rating  
   return (
@@ -9,7 +10,7 @@ const Product = ({ product }) => {
     <Card className='my-3 p-3 rounded'>
         {/* use back tik below */}
         <Link to={`/product/${product._id}`}>
-            <Card.Img src={product.image} variant='top' />
+            <Card.Img src={product.image} variant='top' alt={product.name} />
         </Link>
 
         <Card.Body>
@@ -25,7 +26,7 @@ const Product = ({ product }) => {
                 />
             </Card.Text>
 
-            <Card.Text as='h3'>
+            <Card.Text as='h4' >
                 ${product.price}
             </Card.Text>
         </Card.Body>

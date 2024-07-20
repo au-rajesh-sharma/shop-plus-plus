@@ -10,7 +10,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 //url: `${USERS_URL}/auth`,
                 url: `${USERS_URL}/login`,
                 method: 'POST',
-                body: data,
+                body: data, //send data in query body
             }), 
            
         }),
@@ -20,7 +20,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 url: `${USERS_URL}`,//req on base url only
                 //url: `${USERS_URL}/register`,
                 method: 'POST',
-                body: data,
+                body: data, //send data in query body
             }), 
            
         }),
@@ -33,8 +33,51 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
             }), 
         }),
+
+        profile: builder.mutation({//its a PUT request
+            query: (data) => ({
+                url: `${USERS_URL}/profile`,
+                method: 'PUT',
+                body: data, //send data in query body
+            })
+        }), 
+
+        getUsers: builder.query({//its a GET request
+            query: () => ({
+                url: USERS_URL,
+            }),
+            providesTags: ['Users'],
+            keepUnusedDataFor: 5,
+        }),
+    
+
+        deleteUser: builder.mutation({//its a DELETE request
+            query: (userId) => ({
+                url: `${USERS_URL}/${userId}`,
+                method: 'DELETE'
+                }),
+        }),
+
+        getUserDetails: builder.query({//its a GET request
+            query: (userId) => ({
+                url: `${USERS_URL}/${userId}`,
+            }),
+            keepUnusedDataFor: 5,
+        }),
+
+        updateUser: builder.mutation({//its a PUT request
+            query: (data) => ({
+                url: `${USERS_URL}/${data.userId}`,
+                method: 'PUT',
+                body: data,
+                }),
+                invalidateTags: ['Users'],
+        }),
+
     })
 })
-    
+   
 export const {useLoginMutation, useLogoutMutation, 
-    useRegisterMutation} = usersApiSlice;
+    useRegisterMutation, useProfileMutation,
+    useGetUsersQuery, useDeleteUserMutation,
+    useGetUserDetailsQuery, useUpdateUserMutation,} = usersApiSlice;

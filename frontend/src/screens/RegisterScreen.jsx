@@ -57,7 +57,7 @@ const [confirmPassword, setConfirmPassword] = useState('')
     
     return (
     <FormContainer> 
-        <h1>Sign Up</h1>
+        <h2>Sign Up</h2>
         <Form onSubmit={submitHandler}>
         <Form.Group controlId='name' className='my-2'>
                 <Form.Label>Name</Form.Label>

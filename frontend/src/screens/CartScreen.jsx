@@ -32,7 +32,7 @@ const CartScreen = () => {
     <Row>
         {/* each row has 12 width for columns. */}
         <Col md={8}> {/* this col will take up 8 width out of 12 */}
-            <h1 style={{marginBottom: '20px'}}>Shopping Cart</h1>
+            <h2 style={{marginBottom: '20px'}}>Shopping Cart</h2>
             {cartItems.length === 0 ? (
                 //cart is empty
                 <Message>Your cart is empty 
