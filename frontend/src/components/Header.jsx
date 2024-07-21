@@ -46,7 +46,7 @@ const Header = () => {
                     <LinkContainer to='/'>
                         <Navbar.Brand to='/' >
                             <img src={logo} alt='Rajesh Sharma Online Store' />
-                            Rajesh Sharma Online Store
+                            <p class = "navbar-text">Rajesh Sharma Online Store</p>
                         </Navbar.Brand>
                     </LinkContainer>
 
